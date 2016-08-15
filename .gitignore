@@ -10,6 +10,7 @@ venv
 .cache
 *.egg-info
 .coverage*
+.DS_Store
 /.tox
 /build
 /coverage-html

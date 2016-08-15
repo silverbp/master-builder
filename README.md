@@ -1,3 +1,3 @@
 Master Builder
 ==============
-![Master-Builder](logo.png?raw=true "Master Builder Logo")
+![Master-Builder](logo-200.png?raw=true "Master Builder Logo")
