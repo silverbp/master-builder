@@ -34,7 +34,7 @@ class ConfigFile(namedtuple('_ConfigFile', 'filename config')):
     def get_value(self, value):
         jsonpath_expr = parse(value)
         for match in jsonpath_expr.find(self.config):
-            return expand_value(match.value, self)
+            return self._expand_value(match.value)
 
         if value in _build_defaults:
             return _build_defaults[value]
@@ -46,7 +46,7 @@ class ConfigFile(namedtuple('_ConfigFile', 'filename config')):
         return_list = []
         jsonpath_expr = parse(value)
         for match in jsonpath_expr.find(self.config):
-            return_list.append(expand_value(match.value, self))
+            return_list.append(self._expand_value(match.value, self))
 
         if len(return_list) > 0:
             return return_list
@@ -56,38 +56,36 @@ class ConfigFile(namedtuple('_ConfigFile', 'filename config')):
 
         return None
 
+    def _expand_value(self, value):
+        if not isinstance(value, six.string_types):
+            return value
 
-def expand_file(file, config):
-    split_file = file.split('@')
-    if len(split_file) != 2:
-        raise ConfigurationError("""
-            Invalid file reference: {file},
-            You must specify a JsonPath by appending @ with the JsonPath on the file
-            """.format({file: file}))
+        value = re.sub(r"\@\{\{.+?\}\}", lambda m: self.get_value(m.group()[3:-2]), value)
 
-    file_name = split_file[0]
-    json_path = split_file[1]
+        if (value.startswith('file://')):
+            return self._expand_file(value[7:])
 
-    if file_name.endswith('yaml') or file_name.endswith('yml'):
-        return ConfigFile.from_yaml_file(file_name).get_value(json_path)
-
-    if file_name.endswith('json'):
-        return ConfigFile.from_json_file(file_name).get_value(json_path)
-
-    raise ConfigurationError(u"Invalid file reference: {file}, You can only use a json or yaml file."
-                             .format({file: file}))
-
-
-def expand_value(value, configFile):
-    if not isinstance(value, six.string_types):
         return value
 
-    value = re.sub(r"\@\{\{.+?\}\}", lambda m: configFile.get_value(m.group()[3:-2]), value)
+    def _expand_file(self, file):
+        split_file = file.split('@')
+        if len(split_file) != 2:
+            raise ConfigurationError("""
+                Invalid file reference: {file},
+                You must specify a JsonPath by appending @ with the JsonPath on the file
+                """.format({file: file}))
 
-    if (value.startswith('file://')):
-        return expand_file(value[7:], configFile.config)
+        file_name = split_file[0]
+        json_path = split_file[1]
 
-    return value
+        if file_name.endswith('yaml') or file_name.endswith('yml'):
+            return ConfigFile.from_yaml_file(file_name).get_value(json_path)
+
+        if file_name.endswith('json'):
+            return ConfigFile.from_json_file(file_name).get_value(json_path)
+
+        raise ConfigurationError(u"Invalid file reference: {file}, You can only use a json or yaml file."
+                                 .format({file: file}))
 
 
 def load_yaml(filename, mappings=None):

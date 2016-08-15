@@ -7,7 +7,7 @@ plugins:
   template_engine: "git@git.silverblueprints.net"
 
 commands:
-  default: "blah"
+  default: "DefaultCommand"
   build: "git@git.silverblueprints.net:namespace/node-build.git@master"
 
 build:

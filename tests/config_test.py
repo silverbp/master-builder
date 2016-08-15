@@ -3,15 +3,13 @@ from __future__ import unicode_literals
 
 import os
 
-from jsonpath_rw import jsonpath
-from jsonpath_rw import parse
+from mb.config.config import ConfigFile
 
-from jarvis.config.config import ConfigFile
 
 class TestConfig:
-    configFile = ConfigFile.from_yaml_file("tests/fixtures/sample.jarvis.yml", os.environ)
+    configFile = ConfigFile.from_yaml_file("tests/fixtures/sample.mb.yml", os.environ)
 
-    def test_load_config(self):
+    def test_config_load(self):
         assert self.configFile.get_value('name') == 'sample'
         assert self.configFile.get_value('plugins.version_scheme') == 'TestVersionScheme'
 
