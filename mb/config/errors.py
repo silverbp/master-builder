@@ -14,9 +14,9 @@ class DependencyError(ConfigurationError):
     pass
 
 
-class JarvisFileNotFound(ConfigurationError):
+class MasterBuilderFileNotFoundError(ConfigurationError):
     def __init__(self, supported_filenames):
-        super(JarvisFileNotFound, self).__init__("""
+        super(MasterBuilderFileNotFoundError, self).__init__("""
         Can't find a suitable configuration file in this directory or any
         parent. Are you in the right directory?
 

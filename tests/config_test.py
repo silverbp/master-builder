@@ -3,18 +3,18 @@ from __future__ import unicode_literals
 
 import os
 
-from mb.config.config import ConfigFile
+from mb.config.config import get_default_config_file
 
 
 class TestConfig:
-    configFile = ConfigFile.from_yaml_file("tests/fixtures/sample.mb.yml", os.environ)
+    configFile = get_default_config_file("tests/fixtures/project-dir-yml", os.environ)
 
     def test_config_load(self):
         assert self.configFile.get_value('name') == 'sample'
-        assert self.configFile.get_value('plugins.version_scheme') == 'TestVersionScheme'
+        assert self.configFile.get_value('config.version_scheme') == 'TestVersionScheme'
 
     def test_config_default_values(self):
-        assert self.configFile.get_value('plugins.build_context') == 'DefaultBuildContext'
+        assert self.configFile.get_value('config.template_engine') == 'DefaultTemplateEngine'
 
     def test_config_external_file(self):
         assert self.configFile.get_value('build.version') == '1.0.0'

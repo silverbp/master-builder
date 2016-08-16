@@ -1,0 +1,18 @@
+version: "1"
+name: sample
+vars:
+  some_version: 4.4
+
+plugins: "blah"
+
+config:
+  commands:
+    default: "DefaultCommand"
+    build: "git@git.silverblueprints.net:namespace/node-build.git@master"
+  version_scheme: "TestVersionScheme"
+
+build:
+  build_image: "silverbp.io/some-build:@{{vars.some_version}}"
+  version: "file://tests/fixtures/sample.source.json@version"
+  image_name: "silverbp.io/@{{name}}:@{{build.version}}"
+  path: "$SAMPLE_ENV_VARIABLE"
