@@ -19,6 +19,5 @@ class MasterBuilderFileNotFoundError(ConfigurationError):
         super(MasterBuilderFileNotFoundError, self).__init__("""
         Can't find a suitable configuration file in this directory or any
         parent. Are you in the right directory?
-
         Supported filenames: %s
         """ % ", ".join(supported_filenames))

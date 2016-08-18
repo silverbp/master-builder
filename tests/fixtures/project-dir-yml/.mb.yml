@@ -7,7 +7,7 @@ plugins: "blah"
 
 config:
   commands:
-    default: "DefaultCommand"
+    default: "DemoCommand"
     build: "git@git.silverblueprints.net:namespace/node-build.git@master"
   version_scheme: "TestVersionScheme"
 

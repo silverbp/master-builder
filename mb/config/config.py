@@ -46,8 +46,16 @@ class ConfigFile(namedtuple('_ConfigFile', 'filename config')):
         file = os.path.abspath(self.filename)
         return os.path.dirname(file)
 
+    @property
+    def artifact_dir(self):
+        dir = os.path.join(self.project_dir, self.get_value('config.artifact_dir'))
+        if not os.path.exists(dir):
+            self.log.debug('Master Builder artifact directory does not exist, creating it...')
+            os.makedirs(dir)
+        return dir
+
     @memoize
-    def get_value(self, value):
+    def get_value(self, value, default_value=None):
         jsonpath_expr = parse(value)
         for match in jsonpath_expr.find(self.config):
             return self._expand_value(match.value)
@@ -55,7 +63,7 @@ class ConfigFile(namedtuple('_ConfigFile', 'filename config')):
         if value in _build_defaults:
             return _build_defaults[value]
 
-        return None
+        return default_value
 
     @memoize
     def get_values(self, value):
@@ -169,6 +177,7 @@ def find_candidates_in_parent_dirs(filenames, path):
 _build_defaults = {
     'config.version_scheme': 'DefaultVersionScheme',
     'config.template_engine': 'DefaultTemplateEngine',
+    'config.artifact_dir': '.build',
     'version': '1',
     'log_level': 'INFO'
 }
