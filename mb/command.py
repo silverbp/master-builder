@@ -5,13 +5,13 @@ import abc
 import argparse
 import time
 
-from lib import logger
+from mb.lib import logger
 
 
 class Command(object):
-    def __init__(self, allow_unknown_args=False, add_arg_help=True):
-        self.parser = argparse.ArgumentParser(prog='Master Builder',
-                                              description='Build System for containers',
+    def __init__(self, allow_unknown_args=False, add_arg_help=True, description="command"):
+        self.parser = argparse.ArgumentParser(prog='mb',
+                                              description=description,
                                               add_help=add_arg_help)
         self.parser.add_argument('--verbose',
                                  action='store_true',
@@ -36,9 +36,26 @@ class Command(object):
 
     @abc.abstractmethod
     def run(self, parsed_args, unknown_args, original_arguments):
-        raise NotImplementedError("'_run' must be reimplemented by %s" % self)
+        raise NotImplementedError("'run' must be reimplemented by %s" % self)
 
 
 class DemoCommand(Command):
+    def __init__(self):
+        super(DemoCommand, self).__init__()
+        self._test_property = "initial"
+
     def run(self, parsed_args, unknown_args, original_arguments):
         self.log.info("Demo Command...")
+        self.log.info("Test Property: " + self._test_property)
+
+    @property
+    def test_property(self):
+        return self._test_property
+
+    @test_property.setter
+    def test_property(self, value):
+        self._test_property = value
+
+
+class DockerCommand(Command):
+    pass

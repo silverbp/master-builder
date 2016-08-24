@@ -7,16 +7,18 @@ from setuptools import find_packages
 from setuptools import setup
 
 install_requires = [
-    'cached-property >= 1.2.0, < 2',
-    'docopt >= 0.6.1, < 0.7',
-    'PyYAML >= 3.10, < 4',
-    'requests >= 2.6.1, < 2.8',
-    'texttable >= 0.8.1, < 0.9',
-    'websocket-client >= 0.32.0, < 1.0',
+    'GitPython >= 2.0.8, < 2.1',
+    'MarkupSafe >= 0.23, < 1.0',
+    'PyYAML >= 3.11, < 4.0',
+    'decorator >= 4.0.10, < 5.0',
     'docker-py >= 1.9.0, < 2.0',
-    'dockerpty >= 0.4.1, < 0.5',
-    'six >= 1.3.0, < 2',
-    'jsonschema >= 2.5.1, < 3',
+    'jsonpath-rw >= 1.4.0, < 2.0',
+    'pluggy >= 0.3.1, < 1.0',
+    'ply >= 3.8, < 4.0',
+    'py >= 1.4.31, < 2.0',
+    'requests >= 2.11.0, < 3.0',
+    'six >= 1.10.0, < 2.0',
+    'websocket-client >= 0.37.0, < 1.0'
 ]
 
 

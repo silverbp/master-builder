@@ -10,10 +10,6 @@ class ConfigurationError(Exception):
         return self.msg
 
 
-class DependencyError(ConfigurationError):
-    pass
-
-
 class MasterBuilderFileNotFoundError(ConfigurationError):
     def __init__(self, supported_filenames):
         super(MasterBuilderFileNotFoundError, self).__init__("""

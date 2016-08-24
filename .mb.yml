@@ -1,0 +1,7 @@
+name: "Master Builder"
+config:
+    commands:
+        default:
+            name: "DemoCommand"
+            config:
+                test_property: "changed"
