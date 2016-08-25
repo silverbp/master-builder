@@ -20,9 +20,8 @@ class BuildContext(object):
         raise NotImplementedError("'variables' must be reimplemented by %s" % self)
 
     @abc.abstractmethod
-    @variables.setter
-    def variables(self, value):
-        raise NotImplementedError("'variables setter' must be reimplemented by %s" % self)
+    def add_variables(self, variables):
+        raise NotImplementedError("'add_variables' must be reimplemented by %s" % self)
 
 
 class DefaultBuildContext(BuildContext):
@@ -39,14 +38,13 @@ class DefaultBuildContext(BuildContext):
 
         return {}
 
-    @variables.setter
-    def variables(self, value):
+    def add_variables(self, variables):
         data = {}
         if os.path.isfile(self.build_context_file):
             with open(self.build_context_file, 'r') as buildvarfile:
                 data = json.load(buildvarfile)
 
-        for key, value in value.iteritems():
+        for key, value in variables.items():
             data[key] = value
 
         with open(self.build_context_file, 'w+') as jsonFile:

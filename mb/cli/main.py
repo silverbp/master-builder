@@ -10,16 +10,24 @@ if '--verbose' in sys.argv[1:]:
     logger.set_log_level('DEBUG')
 
 from mb.lib import ioc # NOQA
+already_ran = []
 
 
 def run_command(command, arguments=[]):
+    if command in already_ran:
+        return
+
+    already_ran.append(command)
     loaded_command = ioc.load_command(command)
-    loaded_command.wrapped_run(arguments)
+    for dep_command in loaded_command.dependencies:
+        run_command(dep_command, arguments)
+
+    loaded_command.run(arguments)
 
 
 def main():
-    parser = argparse.ArgumentParser(prog='Master Builder',
-                                     description='Build Ochestration Tool')
+    parser = argparse.ArgumentParser(prog='mb',
+                                     description='Master Builder: Build Ochestration')
     arguments = sys.argv[1:]
     commands = ioc.get_commands()
 

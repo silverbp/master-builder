@@ -25,7 +25,7 @@ class TemplateEngine(object):
 
 class DefaultTemplateEngine(TemplateEngine):
     def __init__(self, build_context, config):
-        TemplateEngine.__init__(self, build_context)
+        super(DefaultTemplateEngine, self).__init__()
         self.build_context = build_context
         self.config = config
 

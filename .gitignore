@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+.vscode
+.build
 venv
 .cache
 *.egg-info

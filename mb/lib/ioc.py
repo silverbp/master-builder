@@ -17,6 +17,7 @@ from mb import build_context # BuildContext # NOQA
 from mb import command # Command # NOQA
 from mb import template_engine # TemplateEngine # NOQA
 from mb import version_scheme #VersionScheme # NOQA
+from mb.config.config import PluginConfig # NOQA
 
 
 def rchop(thestring, ending):
@@ -61,6 +62,7 @@ for module in _plugin_modules:
             _loaded_plugin_definitions[module_attr.__name__] = module_attr
 
 _defined_commands = _config.commands
+_defined_commands['_prerun'] = PluginConfig('MBPreRunCommand', {}, _config)
 
 command_plugins = [k for (k, v) in _loaded_plugin_definitions.items() if _is_plugin_type(v, command.Command)]
 
@@ -69,7 +71,7 @@ for (k, v) in _config.commands.items():
         _log.warn('The following Command: {0} was not found and will not be available'.format(k))
         del _defined_commands[k]
 
-_log.debug('The following commands will be available: {0}'.format(_defined_commands))
+_log.debug('The following commands will be available: {0}'.format([k for (k, v) in _defined_commands.items() if not k.startswith('_')]))
 
 
 def _load_plugin(plugin):
@@ -86,9 +88,8 @@ def _load_plugin(plugin):
 
     instance = plugin_definition(*arguments)
     available_properties = [x for x, y in inspect.getmembers(instance.__class__, lambda x: isinstance(x, property))]
-    for (key, value) in plugin.config.items():
 
-        print(key)
+    for (key, value) in plugin.config.items():
         if key in available_properties:
             try:
                 setattr(instance, key, value)
@@ -109,7 +110,7 @@ def load_dependency(name):
 
 
 def get_commands():
-    return [k for (k, v) in _defined_commands.items()]
+    return [k for (k, v) in _defined_commands.items() if not k.startswith('_')]
 
 
 def load_command(name):

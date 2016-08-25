@@ -14,10 +14,15 @@ class VersionScheme(object):
     def __init__(self):
         self.log = logger.get_logger('[VersionScheme]')
         self.log.debug('Initializing {0}'.format(self.__class__.__name__))
-        return
+
+    def generate(self):
+        self.log.info('Generating Version...')
+        generated_version = self._generate()
+        self.log.info('Version: {0}'.format(generated_version))
+        return generated_version
 
     @abc.abstractmethod
-    def generate(self):
+    def _generate(self):
         raise NotImplementedError("'generate' must be reimplemented by %s" % self)
 
 
@@ -28,7 +33,7 @@ class Increment(Enum):
 
 class DefaultVersionScheme(VersionScheme):
     def __init__(self, config):
-        VersionScheme.__init__(self)
+        super(DefaultVersionScheme, self).__init__()
         self.repo = Repo(config.project_dir)
         self._version = "1.0"
         self._increment = Increment.none
@@ -58,22 +63,23 @@ class DefaultVersionScheme(VersionScheme):
         if value in Increment:
             self._increment = Increment[value]
 
-    def generate(self):
+    def _return_version(self, version):
+        hash = str(self.repo.head.commit)
+        return {"hash": hash, "short_hash": hash[:7], "version": version}
+
+    def _generate(self):
         if not self.version:
             last_tag = self._describe('\*\[^a-z\].\*\[^a-z\].\*\[^a-z\]')
         else:
             last_tag = self._describe('{0}.\*\[^a-z\]'.format(self.version))
 
         if not last_tag:
-            return '{0}.0'.format(self.version)
+            return self._return_version('{0}'.format(self.version))
 
         # this means that the current commit already has a tag, just return it
         if '-' not in last_tag or self.increment == Increment.none:
-            return last_tag
+            return self._return_version(last_tag)
 
         last_tag_split = last_tag.split('-')[0].split('.')
-        major = int(last_tag_split[0])
-        minor = int(last_tag_split[1])
-        patch = int(last_tag_split[2]) + 1
-        calculated_version = '{0}.{1}.{2}'.format(major, minor, patch)
-        return calculated_version
+        calculated_version = '{0}.{2}'.format('.'.join(last_tag_split[:-1]), last_tag_split[-1] + 1)
+        return self._return_version(calculated_version)
