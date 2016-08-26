@@ -3,9 +3,20 @@ from __future__ import unicode_literals
 
 import abc
 import argparse
+import subprocess
 import time
 
 from mb.lib import logger
+
+
+class ProcessError(Exception):
+    def __init__(self, command, exitCode, output=''):
+        self.message = output
+        self.command = command
+        self.exitCode = exitCode
+
+    def __str__(self):
+        return repr(self.exitCode)
 
 
 class Command(object):
@@ -72,9 +83,84 @@ class DemoCommand(Command):
         self._test_property = value
 
 
-class DockerCommand(Command):
-    pass
-
-
 class ShellCommand(Command):
+    def __init__(self, config):
+        super(ShellCommand, self).__init__()
+        self._cwd = config.project_dir
+        self._return_output = True
+        self._throw_on_failure = True
+        self._expected_exit_code = 0
+        self._command = "echo ShellCommand"
+
+    @property
+    def cwd(self):
+        return self._cwd
+
+    @cwd.setter
+    def cwd(self, value):
+        self._cwd = value
+
+    @property
+    def return_output(self):
+        return self._return_output
+
+    @return_output.setter
+    def return_output(self, value):
+        self._return_output = value
+
+    @property
+    def throw_on_failure(self):
+        return self._throw_on_failure
+
+    @throw_on_failure.setter
+    def throw_on_failure(self, value):
+        self._throw_on_failure = value
+
+    @property
+    def expected_exit_code(self):
+        return self._expected_exit_code
+
+    @expected_exit_code.setter
+    def expected_exit_code(self, value):
+        self._expected_exit_code = value
+
+    @property
+    def command(self):
+        return self._command
+
+    @command.setter
+    def command(self, value):
+        self._command = value
+
+    def _execute(self, command, cwd, return_output, throw_on_failure, expected_exit_code):
+        self.log.debug(command)
+        if (return_output):
+            process = subprocess.Popen(command, cwd=cwd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            output, err = process.communicate()
+            exit_code = process.returncode
+            if not output.rstrip() and len(output.rstrip()) > 0:
+                self.log.debug(output)
+            if exit_code != expected_exit_code and throw_on_failure:
+                raise ProcessError(command, exit_code, output)
+            else:
+                self.log.debug('Exit Code: {0}'.format(exit_code))
+                self.log.debug(output)
+                if throw_on_failure:
+                    return output
+                else:
+                    return (output, exit_code)
+        else:
+            process = subprocess.Popen(command, cwd=cwd, shell=True)
+            process.communicate()
+            exit_code = process.returncode
+            if exit_code != expected_exit_code and throw_on_failure:
+                raise ProcessError(command, exit_code)
+            else:
+                return exit_code
+
+    def _run(self, parsed_args, unknown_args, original_arguments):
+        return self._execute(self.command, self.cwd, self.return_output, self.throw_on_failure, self.expected_exit_code)
+
+
+class DockerCommand(Command):
     pass

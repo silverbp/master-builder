@@ -4,9 +4,10 @@ variables:
 config:
     commands:
         default:
-            name: DemoCommand
+            name: ShellCommand
             config:
-                test_property: changed
+                command: tox
+                return_output: False
     version_scheme:
         config:
             version: "@{{variables.version}}"
