@@ -1,7 +1,13 @@
 name: "Master Builder"
+variables:
+    version: "1.0"
 config:
     commands:
         default:
-            name: "DemoCommand"
+            name: DemoCommand
             config:
-                test_property: "changed"
+                test_property: changed
+    version_scheme:
+        config:
+            version: "@{{variables.version}}"
+            increment: patch

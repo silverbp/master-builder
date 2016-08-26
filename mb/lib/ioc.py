@@ -93,8 +93,9 @@ def _load_plugin(plugin):
         if key in available_properties:
             try:
                 setattr(instance, key, value)
-            except:
-                _log.warn('The following plugin config: {0} was not set on {1}, does the property have a setter?'.format(key, plugin.name))
+            except Exception as err:
+                _log.warn('There was a problem setting the plugin config: \'{0}\' on \'{1}\' with \'{2}\'.'.format(plugin.name, key, value))
+                _log.debug('Exception occured while trying to set a plugin config value: {0}'.format(err))
         else:
             _log.warn('The following plugin config: {0}, is not an option to set on {1}'.format(key, plugin.name))
 

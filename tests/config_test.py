@@ -36,7 +36,6 @@ def test_artifact_dir():
     config = ConfigFile(".gitignore", _testConfig)
     assert config.artifact_dir == os.path.join(_project_dir, '.build')
     assert os.path.exists(config.artifact_dir)
-    os.rmdir(config.artifact_dir)
 
 
 def test_custom_artifact_dir():

@@ -74,3 +74,7 @@ class DemoCommand(Command):
 
 class DockerCommand(Command):
     pass
+
+
+class ShellCommand(Command):
+    pass
