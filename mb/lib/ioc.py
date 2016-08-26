@@ -9,6 +9,7 @@ import sys
 
 from mb.config.config import get_default_config_file
 from mb.lib import logger
+from mb.lib import process
 
 _log = logger.get_logger('[Ioc]')
 
@@ -106,6 +107,9 @@ def _load_plugin(plugin):
 def load_dependency(name):
     if name == 'config':
         return _config
+
+    if name == 'process':
+        return process
 
     return _load_plugin(getattr(_config, name))
 
